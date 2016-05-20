@@ -20,3 +20,10 @@ It will return a nicely formatted string with the postcode and city name.
     1012PC in Amsterdam
     
 That's it!
+
+Todo
+----
+
+* Write some tests
+* Add different sites to parse
+* Perhaps just use a public API?
