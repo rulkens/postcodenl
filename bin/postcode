@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-require('../index.js');
+argv   = require('optimist').argv;
+
+require('../index.js')(argv);
