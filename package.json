@@ -1,0 +1,32 @@
+{
+  "name": "postcodenl",
+  "version": "1.0.0",
+  "description": "A simple way to look up postcodes in the Netherlands",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rulkens/postcodenl.git"
+  },
+  "keywords": [
+    "postcode",
+    "lookup",
+    "netherlands"
+  ],
+  "author": "Alexander Rulkens",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rulkens/postcodenl/issues"
+  },
+  "homepage": "https://github.com/rulkens/postcodenl#readme",
+  "dependencies": {
+    "lodash": "^4.12.0",
+    "noodlejs": "^0.3.2",
+    "optimist": "^0.6.1"
+  }
+}
