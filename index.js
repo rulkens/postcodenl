@@ -1,7 +1,8 @@
 var noodle = require('noodlejs'),
     _      = require('lodash'),
     colors = require('colors'),
-    prompt = require('prompt');
+    prompt = require('prompt'),
+    ncp = require('copy-paste');
 
 module.exports = getFromPostcodeDotNl;
 
@@ -112,7 +113,8 @@ function getFromPostcodeDotNl (args) {
             //console.log('found a direct postcode!', result.results.postcode);
             let [postcode, city] = result.results.postcode[0].split(','); // first match
             console.log(postcode.magenta, 'in', city.trim().green);
-
+            // copy to clipboard
+            copyPostcode(postcode);
             return;
         }
 
@@ -174,6 +176,9 @@ function getFromPostcodeDotNl (args) {
 
                 if(filteredMatches.length === 0){
                     console.log('Geen resultaten gevonden!'.red);
+                }
+                if(filteredMatches.length === 1){
+                    copyPostcode(filteredMatches[0][0]);
                 }
             });
         } else {
@@ -239,4 +244,9 @@ function getFromPostcodeDotNl (args) {
         return (Number(number) % 2) === (low % 2);
 
     }
+
+    function copyPostcode (postcode){
+        ncp.copy(postcode, () => console.log('Postcode is gekopieerd'.yellow));
+    }
+
 }
