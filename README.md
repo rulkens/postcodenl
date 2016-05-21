@@ -27,3 +27,9 @@ Todo
 * Write some tests
 * Add different sites to parse
 * Perhaps just use a public API?
+
+
+Requirements
+------------
+
+* Node 6.0.0 and higher (sorry, I'm lazy and want to use ES6)
