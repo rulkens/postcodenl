@@ -1,12 +1,22 @@
+'use strict';
+
 var noodle = require('noodlejs'),
     _      = require('lodash'),
     colors = require('colors'),
     prompt = require('prompt'),
-    ncp = require('copy-paste');
+    ncp    = require('copy-paste');
 
 module.exports = getFromPostcodeDotNl;
 
-'use strict';
+// prompt settings
+prompt.delimiter = '';
+prompt.colors = false;
+
+// noodle settings
+noodle.configure({
+    debug               : true,
+    defaultDocumentType : "html"
+});
 
 /**
  *
@@ -30,40 +40,7 @@ function getFromPostcodeDotNl (args) {
         process.exit();
     }
 
-    // default argument is the lookup query
-    var address = (args._.length > 0) ? args._.join(' ') : Array();
-
-    if (!args._.length > 0) {
-        // perhaps we can form a more specific query
-
-        // a voor adres
-        if (args.a) {
-            address.push(args.a);
-        }
-
-        // adres
-        if (args.adres) {
-            address.push(args.adres);
-        }
-
-        // s for stad
-        if (args.s) {
-            address.push(args.s);
-        }
-
-        if (args.stad) {
-            address.push(args.stad);
-        }
-
-
-        // in the end, join with spaces
-        address = address.join(' ');
-    }
-
-    noodle.configure({
-        debug               : false,
-        defaultDocumentType : "html"
-    });
+    let address = getAddressFromArgs(args);
 
     var query = {
         'url' : site + 'zoek/' + address,
@@ -84,18 +61,49 @@ function getFromPostcodeDotNl (args) {
 
     noodle.query(query).then(function (response) {
         //console.log(response);
-        //console.log(typeof results.results);
 
-        //if(results.results && typeof results.result === 'object'){
-        response
+        // TODO: do error handling and multiple pages here, before handling the results
+        return response
             .results
             .forEach(parseResult);
-        //} else {
-        //    console.log('no array??');
-        //}
 
+        // force cache stop
         noodle.stopCache();
     });
+
+    function getAddressFromArgs (args) {
+        // default argument is the lookup query
+        let address = (args._.length > 0) ? args._.join(' ') : Array();
+
+        if (!args._.length > 0) {
+            // perhaps we can form a more specific query
+
+            // a voor adres
+            if (args.a) {
+                address.push(args.a);
+            }
+
+            // adres
+            if (args.adres) {
+                address.push(args.adres);
+            }
+
+            // s for stad
+            if (args.s) {
+                address.push(args.s);
+            }
+
+            if (args.stad) {
+                address.push(args.stad);
+            }
+
+
+            // in the end, join with spaces
+            address = address.join(' ');
+        }
+
+        return address;
+    }
 
     /**
      * @param result
@@ -160,8 +168,6 @@ function getFromPostcodeDotNl (args) {
             matches.forEach(parseMatch);
             // let the user select
             prompt.message = 'Wat is het '.green;
-            prompt.delimiter = '';
-            prompt.colors = false;
             prompt.start();
             prompt.get(['huisnummer?'], (err, result) => {
                 //also filter out the number, remove the extension
@@ -174,10 +180,10 @@ function getFromPostcodeDotNl (args) {
 
                 filteredMatches.forEach(parseMatch);
 
-                if(filteredMatches.length === 0){
+                if (filteredMatches.length === 0) {
                     console.log('Geen resultaten gevonden!'.red);
                 }
-                if(filteredMatches.length === 1){
+                if (filteredMatches.length === 1) {
                     copyPostcode(filteredMatches[0][0]);
                 }
             });
@@ -205,6 +211,13 @@ function getFromPostcodeDotNl (args) {
         return str.match(/[0-9]{4} ?[a-zA-Z]{2}/) !== null;
     }
 
+    /**
+     * check if all items in an array with a specific index are the same
+     * @todo make this simpler and just check items in a one-dimensional array
+     * @param arr
+     * @param index
+     * @returns {boolean}
+     */
     function allItemsTheSame (arr, index) {
         return arr
             .map(match => match[index])
@@ -217,7 +230,7 @@ function getFromPostcodeDotNl (args) {
      * @param {String} range
      * @returns {boolean}
      */
-    function withinRange(number, range){
+    function withinRange (number, range) {
         // first parse range
         let [low, high] = range
             .split('-')
@@ -233,7 +246,7 @@ function getFromPostcodeDotNl (args) {
      * @param {String} range
      * @returns {boolean}
      */
-    function matchParity(number, range){
+    function matchParity (number, range) {
         let [low, high] = range
             .split('-')
             .map(item => item.trim())
@@ -245,7 +258,7 @@ function getFromPostcodeDotNl (args) {
 
     }
 
-    function copyPostcode (postcode){
+    function copyPostcode (postcode) {
         ncp.copy(postcode, () => console.log('Postcode is gekopieerd'.yellow));
     }
 
